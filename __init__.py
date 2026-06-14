@@ -1,0 +1,24 @@
+import bpy
+
+from . import ts_mat, ts_scs, ts_uv, ui_main
+
+bl_info = {
+    "name": "TSG",
+    "author": "TS, Chat GPT",
+    "version": (0, 0, 1),
+    "blender": (5, 0, 0),
+    "category": "3D View",
+}
+
+
+modules = [ts_mat, ts_scs, ts_uv, ui_main]
+
+
+def register():
+    for module in modules:
+        module.register()
+
+
+def unregister():
+    for module in modules:
+        module.unregister()
