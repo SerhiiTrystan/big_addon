@@ -1,6 +1,6 @@
 import bpy
 
-from . import ts_mat, ts_scs, ts_uv, ui_main
+from . import ts_bridge, ts_mat, ts_scs, ts_uv, ui_main
 
 bl_info = {
     "name": "TSG",
@@ -11,7 +11,7 @@ bl_info = {
 }
 
 
-modules = [ts_mat, ts_scs, ts_uv, ui_main]
+modules = [ts_mat, ts_scs, ts_uv, ts_bridge, ui_main]
 
 
 def register():
