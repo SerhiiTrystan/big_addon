@@ -1,4 +1,3 @@
-from this import s
 
 import bpy
 import os
