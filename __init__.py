@@ -1,6 +1,6 @@
 import bpy
 
-from . import ts_bridge, ts_manager, ts_mat, ts_scs, ts_uv, ui_main
+from . import ts_bridge, ts_mat, ts_scs, ts_uv, ts_validator, ui_main
 
 bl_info = {
     "name": "TSG",

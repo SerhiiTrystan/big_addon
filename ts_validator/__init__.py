@@ -1,8 +1,8 @@
 import bpy
 
-from . import operators
+from . import operators, properties
 
-modules = [operators]
+modules = [operators, properties]
 
 
 def register():
