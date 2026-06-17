@@ -65,6 +65,8 @@ class TSUV_OT_uv_map_create(bpy.types.Operator):
                     new_uv.active = True
         self.report({"INFO"}, f"Created UV map '{uv_map_name}' on applicable objects")
         return {"FINISHED"}
+
+
 # Rename selecter uv map
 class TSUV_OT_uv_map_rename(bpy.types.Operator):
     bl_idname = "object.tsuv_uv_map_rename"
@@ -77,7 +79,7 @@ class TSUV_OT_uv_map_rename(bpy.types.Operator):
         if not new_name:
             self.report({"ERROR"}, "UV map name cannot be empty")
             return {"CANCELLED"}
-            
+
         for obj in context.selected_objects:
             if obj.type == "MESH" and obj.data.uv_layers.active:
                 obj.data.uv_layers.active.name = new_name
