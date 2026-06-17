@@ -56,3 +56,37 @@ class TSB_OT_import_geo(bpy.types.Operator):
                     op.filepath = f
                 bpy.context.window_manager.popup_menu(draw, title="Import FBX", icon='FILE_FOLDER')
         return {'FINISHED'}
+
+class TSB_OT_folder_path(bpy.types.Operator):
+    bl_idname = "tsb.folder_path"
+    bl_label = "Select Folder"
+
+    filepath = bpy.props.StringProperty()
+
+    def execute(self, context):
+        props = context.scene.tsb_props
+        path = bpy.path.abspath(props.tsg_path)
+        filepath = bpy.path.abspath(path, self.filepath)
+
+        if os.path.exists(filepath):
+            bpy.ops.import_scene.fbx(filepath=filepath)
+            self.report({'INFO'}, f"Imported {self.filepath}")
+        else:
+            self.report({'ERROR'}, f"File {self.filepath} does not exist")
+        return {'FINISHED'}
+
+class TSB_OT_clear_folder(bpy.types.Operator):
+    bl_idname = "tsb.clear_folder"
+    bl_label = "Clear Folder"
+    bl_description = "Clear folder"
+
+    def execute(self, context):
+        props = context.scene.tsb_props
+        path = bpy.path.abspath(props.tsg_path)
+        if os.path.exists(path):
+            for file in os.listdir(path):
+                os.remove(os.path.join(path, file))
+            self.report({'INFO'}, f"Cleared folder {path}")
+        else:
+            self.report({'INFO'}, f"Folder {path} does not exist")
+        return {'FINISHED'}
