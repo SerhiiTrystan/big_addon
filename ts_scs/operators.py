@@ -1,9 +1,9 @@
 import bpy
 
 
-class TSG_OT_scs_map_check(bpy.types.Operator):
+class TS_SCS_OT_scs_map_check(bpy.types.Operator):
     bl_idname = "tsg_ot_scs_map_check"
-    bl_label = "Check naming ofUV map "
+    bl_label = "Check naming of map "
 
     def execute(self, context):
         for obj in context.selected_objects:
