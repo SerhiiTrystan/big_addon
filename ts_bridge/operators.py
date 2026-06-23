@@ -21,7 +21,6 @@ class TSB_OT_export_geo(bpy.types.Operator):
             use_selection=True
             apply_unit_scale=True
             bake_space_transform=True
-
         )
         self.report({'INFO'}, f"Exported {filepath}")
         return {'FINISHED'}

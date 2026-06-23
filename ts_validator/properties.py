@@ -1,5 +1,3 @@
-from pydoc import describe
-
 import bpy
 
 
@@ -11,7 +9,7 @@ class TSV_PT_result_item(bpy.types.PropertyGroup):
     element_type: bpy.props.StringProperty(name="Element Type")
     element_indices: bpy.props.IntProperty(name="Element Indices")
 
-    classes = TSV_PT_result_item
+    classes = (TSV_PT_result_item,)
 
     def register():
         for cls in classes:
