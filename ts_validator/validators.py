@@ -1,5 +1,4 @@
 import math
-from platform import machine
 import re
 
 import bmesh
