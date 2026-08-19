@@ -603,6 +603,20 @@ class TSG_OT_validation_select_elements(bpy.types.Operator):
         return {'FINISHED'}
 
 
+# =============================================================================
+# DIFFERENT TOOLS
+# =============================================================================
+
+
+class TSG_OT_different_tools_placeholder(bpy.types.Operator):
+    bl_idname = "tsg.different_tools_placeholder"
+    bl_label = "Different Tools Placeholder"
+
+    def execute(self, context):
+        self.report({'INFO'}, "Different Tools placeholder is ready for future operators")
+        return {'FINISHED'}
+
+
 CLASSES = (
     TSG_OT_uv_set_active,
     TSG_OT_uv_create,
@@ -625,6 +639,7 @@ CLASSES = (
     TSG_OT_validation_clear,
     TSG_OT_validation_select_object,
     TSG_OT_validation_select_elements,
+    TSG_OT_different_tools_placeholder,
 )
 
 
