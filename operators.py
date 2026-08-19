@@ -5,6 +5,7 @@ import uuid
 import bpy
 
 from . import validators
+from .properties import get_exchange_path
 from .utils import (
     get_current_time_string,
     get_latest_blend_file,
@@ -115,7 +116,7 @@ class TSG_OT_uv_delete(bpy.types.Operator):
 
 
 def _exchange_folder(context):
-    return bpy.path.abspath(context.scene.tsg_exchange_path)
+    return get_exchange_path(context)
 
 
 def _fbx_export_available():
