@@ -73,6 +73,10 @@ def draw_uv(layout, context):
     row.operator("tsg.uv_set_active", icon='CHECKMARK')
     row.operator("tsg.uv_delete", text="Delete", icon='TRASH')
 
+    row = layout.row(align=True)
+    row.operator("tsg.uv_hide_by_map", text="Hide With UV", icon='HIDE_ON')
+    row.operator("tsg.uv_unhide_all", text="Unhide All", icon='HIDE_OFF')
+
     layout.separator()
     layout.prop(scene, "tsg_uv_map_name", text="Name")
     row = layout.row(align=True)

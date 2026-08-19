@@ -110,6 +110,46 @@ class TSG_OT_uv_delete(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class TSG_OT_uv_hide_by_map(bpy.types.Operator):
+    bl_idname = "tsg.uv_hide_by_map"
+    bl_label = "Hide Objects With Selected UV Map"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        name = context.scene.tsg_uv_map_selector
+        if not name:
+            self.report({'WARNING'}, "No UV map selected")
+            return {'CANCELLED'}
+
+        hidden = 0
+        for obj in context.view_layer.objects:
+            if obj.type != 'MESH':
+                continue
+            if name not in obj.data.uv_layers:
+                continue
+            obj.hide_set(True)
+            hidden += 1
+
+        self.report({'INFO'}, f"Hidden {hidden} object(s) with UV map '{name}'")
+        return {'FINISHED'}
+
+
+class TSG_OT_uv_unhide_all(bpy.types.Operator):
+    bl_idname = "tsg.uv_unhide_all"
+    bl_label = "Unhide Objects"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        restored = 0
+        for obj in context.view_layer.objects:
+            if obj.hide_get():
+                obj.hide_set(False)
+                restored += 1
+
+        self.report({'INFO'}, f"Unhid {restored} object(s)")
+        return {'FINISHED'}
+
+
 # =============================================================================
 # BRIDGE: simple FBX exchange folder
 # =============================================================================
@@ -568,6 +608,8 @@ CLASSES = (
     TSG_OT_uv_create,
     TSG_OT_uv_rename,
     TSG_OT_uv_delete,
+    TSG_OT_uv_hide_by_map,
+    TSG_OT_uv_unhide_all,
     TSG_OT_bridge_export,
     TSG_OT_bridge_import,
     TSG_OT_bridge_clear,
