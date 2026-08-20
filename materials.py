@@ -1,6 +1,5 @@
 import hashlib
 import json
-import math
 import os
 import time
 import uuid
@@ -282,6 +281,7 @@ def _create_preview_scene(settings):
     scene.render.resolution_y = settings.tsg_mat_resolution
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = 'PNG'
+    scene.render.image_settings.color_mode = 'RGBA'
     scene.render.film_transparent = False
     try:
         scene.cycles.samples = settings.tsg_mat_samples
@@ -320,43 +320,55 @@ def _build_preview_rig(context, scene):
     if window:
         window.scene = scene
     try:
-        # Blender's primitive operator gives us a proper UV layer, which is
-        # important for ordinary Image Texture/TGA materials.
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=48, ring_count=24, location=(0, 0, 0))
-        sphere = context.active_object
-        sphere.name = PREVIEW_SCENE_NAME + "_Sphere"
-        bpy.ops.object.shade_smooth()
+        # The plane provides regular UV coordinates for Image Texture materials,
+        # including TGA files, without distorting the source artwork.
+        bpy.ops.mesh.primitive_plane_add(size=2.4, location=(0, 0, 0))
+        preview_object = context.active_object
+        preview_object.name = PREVIEW_SCENE_NAME + "_Plane"
 
-        bpy.ops.object.camera_add(location=(0.0, -3.15, 0.15))
+        bpy.ops.object.camera_add(location=(0.0, 0.0, 3.0))
         camera = context.active_object
         camera.name = PREVIEW_SCENE_NAME + "_Camera"
-        camera.data.lens = 58
-        camera.rotation_euler = ((math.radians(90), 0, 0))
-        direction = -camera.location
-        camera.rotation_euler = direction.to_track_quat('-Z', 'Y').to_euler()
+        camera.data.type = 'ORTHO'
+        camera.data.ortho_scale = 2.6
+        # A default camera faces along local -Z, directly toward the plane.
+        camera.rotation_euler = (0.0, 0.0, 0.0)
         scene.camera = camera
 
-        _add_area_light(scene, PREVIEW_SCENE_NAME + "_Key", (-2.2, -2.3, 3.0), 850, 4.0)
-        _add_area_light(scene, PREVIEW_SCENE_NAME + "_Fill", (2.8, -1.2, 1.5), 500, 3.0)
-        _add_area_light(scene, PREVIEW_SCENE_NAME + "_Rim", (0.8, 2.2, 2.4), 700, 3.0)
-        return sphere
+        _add_area_light(scene, PREVIEW_SCENE_NAME + "_Key", (-1.5, -1.5, 3.0), 600, 3.0)
+        _add_area_light(scene, PREVIEW_SCENE_NAME + "_Fill", (1.5, -0.5, 2.0), 300, 3.0)
+        return preview_object
     finally:
         if window and old_scene:
             window.scene = old_scene
 
 
-def _render_material(context, scene, sphere, mat, filepath):
+def material_uses_connected_alpha(mat):
+    if not mat or not mat.use_nodes or not mat.node_tree:
+        return False
+
+    for node in mat.node_tree.nodes:
+        if not any(output.type == 'SHADER' for output in node.outputs):
+            continue
+        alpha_input = node.inputs.get("Alpha")
+        if alpha_input and alpha_input.is_linked:
+            return True
+    return False
+
+
+def _render_material(context, scene, preview_object, mat, filepath):
     window = context.window
     old_scene = window.scene if window else None
     try:
         if window:
             window.scene = scene
-        sphere.data.materials.clear()
-        sphere.data.materials.append(mat)
+        preview_object.data.materials.clear()
+        preview_object.data.materials.append(mat)
+        scene.render.film_transparent = material_uses_connected_alpha(mat)
         scene.render.filepath = filepath
         bpy.ops.render.render(write_still=True)
     finally:
-        sphere.data.materials.clear()
+        preview_object.data.materials.clear()
         if window and old_scene:
             window.scene = old_scene
 
@@ -370,7 +382,7 @@ def render_previews(context, materials, force=False, operator=None):
     skipped = 0
     try:
         scene = _create_preview_scene(context.scene)
-        sphere = _build_preview_rig(context, scene)
+        preview_object = _build_preview_rig(context, scene)
         for index, mat in enumerate(materials, 1):
             current = material_hash(mat)
             entry = cache_entry(mat, cache)
@@ -380,7 +392,7 @@ def render_previews(context, materials, force=False, operator=None):
                 continue
             if operator:
                 operator.report({'INFO'}, f"TSG Mat preview {index}/{len(materials)}: {mat.name}")
-            _render_material(context, scene, sphere, mat, path)
+            _render_material(context, scene, preview_object, mat, path)
             cache["materials"][get_material_uuid(mat)] = {
                 "name": mat.name_full,
                 "hash": current,
