@@ -1,0 +1,23 @@
+TSG 0.3.0 - first TSG Mat integration
+
+Added:
+- Separate View3D N-panel tab: TSG Mat
+- Material grid with search, selection and isolate mode
+- Persistent tags and tag filtering
+- Safe material assignment in Object/Edit Mode
+- Pick materials from selected objects/faces
+- Select objects by selected materials
+- Create, duplicate, rename, delete and Shader Editor actions
+- Protected unused-material cleanup
+- TSG Mat popup that reuses the same UI/functionality
+- Custom PNG preview cache stored in the TSG user config directory
+- Cycles preview rendering (manual update changed / selected / rebuild all)
+- Material UUIDs so cache survives material renaming
+- Shader/image hash detection including image-file modification time (TGA included)
+- Manual / Detect Changes / Auto Render preview modes
+
+Notes:
+- Default preview mode is Detect Changes. It checks every 2 minutes but does not render automatically.
+- Auto Render is optional and only renders changed/missing previews.
+- Preview render uses the user's Cycles configuration/device.
+- Tagged, fake-user, linked, or actually-used materials are protected from Delete Unused.
